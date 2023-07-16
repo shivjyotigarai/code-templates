@@ -1,38 +1,31 @@
-#include<bits/stdc++.h>
-using namespace std;
-vector<int> adj[101];
-bool visited[101];
-bool DFSvisited[101];
-bool DFS(int src)
-{
-    visited[src]=true;
-    DFSvisited[src]=true;
-    for(auto it= adj[src].begin();it!=adj[src].end();++it)
+class Solution {
+  public:
+    // Function to detect cycle in a directed graph.
+    bool dfs(int u,vector<bool> &visited,vector<bool> &visited_curr,vector<int> adj[])
     {
-        if(!visited[*it]) return DFS(*it);
-        else if(DFSvisited[*it]) return true;
+        visited[u]=true;
+        visited_curr[u]=true;
+        bool check = false;
+        for(auto v:adj[u])
+        {
+            if(!visited[v]) 
+            check+=dfs(v,visited,visited_curr,adj);
+            else if(visited_curr[v])
+            return true;
+        }
+        visited_curr[u] = false;
+        return check;
+
     }
-    DFSvisited[src]=false;
-    return false;
-}
-int32_t main()
-{
-    int n,e;
-    cin>>n>>e;
-    memset(visited,0,sizeof(visited));
-    memset(DFSvisited,0,sizeof(DFSvisited));
-    for(int i=0;i<e;++i)
-    {
-        int u,v;
-        cin>>u>>v;
-        adj[u].push_back(v);
-     
+    bool isCyclic(int V, vector<int> adj[]) {
+        // code here
+        vector<bool> visited(V,false);
+        vector<bool> visited_curr(V,false);
+        for(int i=0;i<V;++i)
+        {
+            if(!visited[i]&& dfs(i,visited,visited_curr,adj))
+            return true;
+        }
+        return false;
     }
-    for(int i=0;i<n;++i)
-    {
-        if(!visited[i] && DFS(i))
-        {cout<<"Cycle Detected at "<<i<<" vertex Sub Graph"<<endl;return 0;}
-    }
-    cout<<"No Cycle Detected"<<endl;
-    return 0;
-}
+};
